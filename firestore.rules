@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function esAdmin() {
+      return request.auth != null && request.auth.token.email == 'admin@gordo.com';
+    }
+    function esCaja() {
+      return request.auth != null && request.auth.token.email == 'caja@gordo.com';
+    }
+
+    match /gordo-pizzeria/{key} {
+      allow read, write: if esAdmin();
+      allow read: if esCaja() && key in [
+        'ventas', 'cierres', 'caja_actual', 'movimientos_caja', 'movs_inventario',
+        'insumos', 'menu', 'consumo_interno', 'config', 'categorias'
+      ];
+      allow write: if esCaja() && key in [
+        'ventas', 'cierres', 'caja_actual', 'movimientos_caja', 'movs_inventario',
+        'insumos', 'menu', 'consumo_interno', 'config'
+      ];
+    }
+
+    match /comandos/{id} {
+      allow create, delete: if esAdmin();
+      allow read: if esAdmin() || esCaja();
+      allow update: if esAdmin()
+        || (esCaja() && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['estado', 'aplicadoEn', 'resultado']));
+    }
+
+    match /bitacora_inv/{id} {
+      allow create: if esCaja() || esAdmin();
+      allow read: if esAdmin();
+    }
+  }
+}
