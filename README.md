@@ -31,3 +31,4 @@ npm run dev
 - El inventario trae cantidades de ejemplo (masa 40, bebidas 24 c/u) para poder vender. Ajusta al stock real en Ventas → Inventario → Ajustar.
 - Nombres de socios y roles de consumo interno: Administración → Personal.
 - Costos de productos y de insumos arrancan vacíos: complétalos en Administración → Productos y en Inventario.
+- 
